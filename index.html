@@ -143,6 +143,7 @@
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
         let db, auth, userId;
+        let isShellRendered = false;
 
         const getTodayDateString = () => new Date().toISOString().split('T')[0];
         const getWeekId = (date) => {
@@ -289,7 +290,11 @@
             const container = document.getElementById('app-container');
             if (!container) return;
 
-            container.innerHTML = AppShell();
+            // Renderiza o esqueleto da aplicação apenas uma vez
+            if (!isShellRendered) {
+                container.innerHTML = AppShell();
+                isShellRendered = true;
+            }
             
             const mainTasksGrid = document.getElementById('main-tasks');
             const contentGrid = document.getElementById('content-grid');
@@ -424,8 +429,6 @@
                         return;
                     }
                 }
-                
-                render(); 
                 
                 const dailyDocRef = doc(db, `artifacts/${appId}/users/${userId}/dailyLogs`, getTodayDateString());
                 onSnapshot(dailyDocRef, (docSnap) => {
